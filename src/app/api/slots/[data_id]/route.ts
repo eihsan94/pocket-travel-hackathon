@@ -1,12 +1,15 @@
 import { getJson } from "serpapi";
 import { NextResponse } from "next/server";
+import { mapLanguageNameToHlCode } from "@/app/utils/language.utils";
 
-export async function GET(
+export async function POST(
   request: Request,
   { params }: { params: { data_id: string } }
 ) {
   try {
+    const { language } = await request.json();
     const { data_id } = params;
+
     let images = await getJson({
       engine: "google_maps_photos",
       data_id,
@@ -14,9 +17,11 @@ export async function GET(
     });
 
     images = images.photos.map((p: { image: string }) => p.image);
+    const hl = mapLanguageNameToHlCode(language);
 
     const result = await getJson({
       engine: "google_maps_reviews",
+      hl,
       data_id,
       api_key: process.env.SERP_API_KEY,
     });

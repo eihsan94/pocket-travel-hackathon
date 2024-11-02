@@ -15,6 +15,7 @@ export interface ItineraryItem {
     };
     description: string; // things that the ai generated
     reviews?: any[]; // exactly the same structure as serp api frontend will fetch the reviews from the serp google maps reviews with data_id
+    language?: string;
   }[];
 }
 

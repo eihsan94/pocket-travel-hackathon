@@ -32,13 +32,20 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (itinerary) => {
 
   // Function to fetch data for a slot
   const fetchSlotData = async (slot: ItineraryItem["slots"][0]) => {
-    const { data_id } = slot;
+    const { data_id, language = "en" } = slot;
     if (slotDataCache[data_id]) {
       // Data already fetched; no need to fetch again
       return;
     }
     try {
-      const response = await fetch(`/api/slots/${data_id}`);
+      // post request
+      const response = await fetch(`/api/slots/${data_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ language }),
+      });
       const { images, reviews } = await response.json();
       setSlotDataCache((prevCache) => ({
         ...prevCache,

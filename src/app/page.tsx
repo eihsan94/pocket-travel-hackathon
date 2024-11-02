@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
+// page.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -19,17 +21,17 @@ import {
 import { ItineraryItem } from "@/types";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { FiCompass } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion"; // Import framer-motion for animations
+import { motion, AnimatePresence } from "framer-motion";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
-// Import your Lottie JSON files
 import loadingAnimation1 from "@/assets/loading.json";
 import loadingAnimation2 from "@/assets/loading2.json";
 import loadingAnimation3 from "@/assets/loading3.json";
 import loadingAnimation4 from "@/assets/loading4.json";
 import loadingAnimation5 from "@/assets/loading5.json";
 import loadingAnimation6 from "@/assets/loading6.json";
-import welcomeAnimation from "@/assets/welcome.json"; // Replace with your actual image path
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import welcomeAnimation from "@/assets/welcome.json";
+
 const responsivePadding = { base: 4, md: 8 };
 
 export default function Home() {
@@ -55,28 +57,43 @@ export default function Home() {
     loadingAnimation6,
   ];
 
+  // Effect to reset sessionId on app reload
+  useEffect(() => {
+    // Clear localStorage to reset session on reload
+    localStorage.removeItem("session_id");
+    setSessionId(null);
+  }, []);
+
+  useEffect(() => {
+    // Check if session_id exists in localStorage
+    const storedSessionId = localStorage.getItem("session_id");
+    if (storedSessionId) {
+      setSessionId(storedSessionId);
+    }
+  }, []);
+
   useEffect(() => {
     let animationInterval: NodeJS.Timeout | null = null;
     let progressInterval: NodeJS.Timeout | null = null;
 
     if (loading) {
-      // Animation change every 2 seconds (same as before)
+      // Animation change every 2 seconds
       animationInterval = setInterval(() => {
         setCurrentAnimationIndex(
           (prevIndex) => (prevIndex + 1) % loadingAnimations.length
         );
       }, 2000);
 
-      // Progress interval to finish within 20 seconds, updating every 100ms for smoother animation
+      // Progress interval to finish within 15 seconds, updating every 100ms
       progressInterval = setInterval(() => {
         setProgress((prevProgress) => {
           if (prevProgress >= 100) {
             clearInterval(progressInterval!);
             return 100;
           }
-          return prevProgress + 100 / (15 * 10); // 20 seconds, 10 updates per second
+          return prevProgress + 100 / (15 * 10); // 15 seconds, 10 updates per second
         });
-      }, 100); // Update every 100ms for a smoother progress
+      }, 100); // Update every 100ms
     } else {
       setCurrentAnimationIndex(0);
       setProgress(0);
@@ -93,6 +110,7 @@ export default function Home() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(sessionId ? { "X-Session-ID": sessionId } : {}),
       },
       body: JSON.stringify(data),
     }).then((response) => response.json());
@@ -125,9 +143,15 @@ export default function Home() {
         setResponseString(data.response);
         setItineraryItems([]);
       } else {
+        data.user_input = search; // Include the original user query
         setItineraryItems(await fetchItineraryItems(data));
       }
-      setSessionId(data.session_id);
+
+      // Store session_id in localStorage
+      if (data.session_id) {
+        localStorage.setItem("session_id", data.session_id);
+        setSessionId(data.session_id);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {

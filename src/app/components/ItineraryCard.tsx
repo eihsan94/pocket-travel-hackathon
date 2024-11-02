@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ItineraryItem } from "@/types";
-import {
-  Box,
-  VStack,
-  HStack,
-  Image,
-  Text,
-  Flex,
-  Circle,
-} from "@chakra-ui/react";
+import { Box, VStack, Image, Text, Flex, Circle } from "@chakra-ui/react";
 import { useState } from "react";
 import ItineraryDrawer from "./ItineraryDrawer";
 
@@ -80,14 +72,66 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (itinerary) => {
         <Text fontWeight="bold" fontSize="xl">
           Day {itinerary.day} - {itinerary.city}
         </Text>
-        <HStack spacing={4} alignItems="start" w="100%">
+        <Flex
+          gap={4}
+          alignItems="start"
+          w="100%"
+          direction={{
+            base: "column",
+            md: "row",
+          }}
+          justifyContent={{
+            base: "center",
+            md: "start",
+          }}>
           <Image
+            display={{
+              base: "none",
+              md: "block",
+            }}
             src={itinerary.image}
             alt={itinerary.image}
             boxSize="120px"
             objectFit="cover"
             borderRadius="150px 150px 0 0"
           />
+          <Box
+            position="relative"
+            width="100%"
+            mb="16"
+            height="auto"
+            display={{
+              base: "block",
+              md: "none",
+            }}>
+            {/* Blurred Background Image */}
+            <Image
+              src={itinerary.image}
+              alt={`${itinerary.image}-blurred`}
+              boxSize="100%"
+              objectFit="cover"
+              filter="blur(40px)"
+              position="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              zIndex="0"
+            />
+
+            {/* Main Foreground Image */}
+            <Image
+              src={itinerary.image}
+              alt={itinerary.image}
+              height={"120px"}
+              objectFit="contain"
+              borderRadius="xl"
+              position="relative"
+              zIndex="1"
+              margin="auto"
+            />
+          </Box>
+
           {/* Wrap slots in a relative container */}
           <VStack align="start" spacing={4} w="100%" position="relative">
             {/* Dynamic vertical line */}
@@ -146,7 +190,7 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (itinerary) => {
               </ItineraryDrawer>
             ))}
           </VStack>
-        </HStack>
+        </Flex>
       </VStack>
     </Box>
   );

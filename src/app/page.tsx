@@ -30,6 +30,7 @@ import loadingAnimation5 from "@/assets/loading5.json";
 import loadingAnimation6 from "@/assets/loading6.json";
 import welcomeAnimation from "@/assets/welcome.json"; // Replace with your actual image path
 import { FaMagnifyingGlass } from "react-icons/fa6";
+const responsivePadding = { base: 4, md: 8 };
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
@@ -135,12 +136,12 @@ export default function Home() {
   };
 
   return (
-    <VStack spacing={8} px={8} pb={150} pt={8} overflow="auto">
+    <VStack spacing={8} px={responsivePadding} pb={150} pt={8} overflow="auto">
       {/* Header */}
       <Flex
         w="100%"
         py={4}
-        px={8}
+        px={responsivePadding}
         alignItems="center"
         position="fixed"
         top={0}
@@ -156,7 +157,12 @@ export default function Home() {
       </Flex>
 
       {/* Spacer to offset the fixed header */}
-      <Box h="80px" />
+      <Box
+        h={{
+          base: "56px",
+          md: "80px",
+        }}
+      />
 
       {loading && (
         <Center w="100%" h="60vh">
@@ -184,13 +190,18 @@ export default function Home() {
       )}
 
       {!loading && itineraryItems.length === 0 && (
-        <Center w="100%" h="60vh">
-          <VStack spacing={6}>
+        <Center
+          w="100%"
+          h={{
+            base: "50vh",
+            md: "60vh",
+          }}>
+          <VStack spacing={responsivePadding}>
             <Player
               autoplay
               loop
               src={welcomeAnimation}
-              style={{ height: "50vh", width: "50vw" }}
+              style={{ height: "50vh", width: "70vw" }}
             />
             <Text fontSize="2xl" fontWeight="bold" color="gray.600">
               Tell us where you want to go!
@@ -246,7 +257,7 @@ export default function Home() {
 
       <Box
         w="100%"
-        p={8}
+        p={responsivePadding}
         pos="fixed"
         bottom={0}
         bg="rgba(255, 255, 255, 0.2)"
@@ -271,6 +282,7 @@ export default function Home() {
             _hover={{ bg: "orange.500" }}
             onClick={handleSearch}
             isLoading={loading}
+            width={["50%", "auto"]}
             rightIcon={<FaMagnifyingGlass />}
             loadingText="Searching">
             Search
